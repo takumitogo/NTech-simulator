@@ -288,13 +288,13 @@ body {
     <div class="grid3">
       <div class="field">
         <label>チョコ停の頻度（回/週）</label>
-        <input type="number" id="choko" value="" min="0" step="0.5" placeholder="空欄→業界平均で補完">
-        <span class="hint">1回あたり約15分と仮定</span>
+        <input type="number" id="choko" value="2" min="0" step="0.5">
+        <span class="hint">目安値（2回/週）。実態に合わせて変更してください。1回あたり約15分と仮定</span>
       </div>
       <div class="field">
         <label>ドカ停の頻度（回/月）</label>
-        <input type="number" id="doka" value="" min="0" step="0.5" placeholder="空欄→業界平均で補完">
-        <span class="hint">1回あたり約4時間と仮定</span>
+        <input type="number" id="doka" value="1" min="0" step="0.5">
+        <span class="hint">目安値（1回/月）。実態に合わせて変更してください。1回あたり約4時間と仮定</span>
       </div>
       <div class="field">
         <label>不良率（%）</label>
@@ -343,8 +343,9 @@ body {
   <div id="basis" class="basis"></div>
 
   <div class="note">
-    ※設備停止損失の算出：八千代ソリューションズ（2026）の計算方法を参考に「時間あたり売上×年間停止時間」で試算。チョコ停・ドカ停が未入力の場合は業界平均停止損失率で補完。<br>
+    ※設備停止損失の算出：八千代ソリューションズ（2026）の計算方法を参考に「時間あたり売上×年間停止時間」で試算。チョコ停・ドカ停はデフォルト値（2回/週・1回/月）を仮置き。実態に合わせて変更してください。<br>
     ※品質不良ロスの算出：不良率入力時のみ表示。「1工場売上×不良率」で概算。実際の損失は廃棄・再加工・クレーム対応コストを含むため参考値。<br>
+    ※計画停止（定期修繕）は対象外。突発停止のみを試算対象としています。<br>
     ※実際の効果はデータ状況・導入範囲により異なります。御社の実データをもとに精緻化が可能です。
   </div>
 
@@ -426,26 +427,20 @@ function calc() {
   var pSales = (sales / plants) * 1e8;
   var hourly = pSales / hours;
 
-  var hc   = cr   !== '' && !isNaN(parseFloat(cr));
-  var hd   = dr   !== '' && !isNaN(parseFloat(dr));
+  var hc   = true;
+  var hd   = true;
   var hdef = defV !== '' && !isNaN(parseFloat(defV));
 
   var stopLoss, basisLines = [];
 
-  if (hc || hd) {
-    var c  = hc ? parseFloat(cr) : 0;
-    var d  = hd ? parseFloat(dr) : 0;
-    var sh = c * 50 * 15 / 60 + d * 12 * 4;
-    stopLoss = hourly * sh / 1e4;
-    var pts = [];
-    if (hc) pts.push('チョコ停' + c + '回/週（1回15分）');
-    if (hd) pts.push('ドカ停' + d + '回/月（1回4h）');
-    basisLines.push('① 設備停止損失：' + pts.join('・') + ' → 年間' + (Math.round(sh * 10) / 10) + 'h停止（実数ベース）');
-  } else {
-    var lr = hours >= 6000 ? 0.020 : 0.025;
-    stopLoss = pSales * lr / 1e4;
-    basisLines.push('① 設備停止損失：業界平均停止損失率（' + (lr * 100).toFixed(1) + '%）ベース　※チョコ停・ドカ停を入力すると実数ベースに切替');
-  }
+  var c  = parseFloat(cr) || 0;
+  var d  = parseFloat(dr) || 0;
+  var sh = c * 50 * 15 / 60 + d * 12 * 4;
+  stopLoss = hourly * sh / 1e4;
+  var pts = [];
+  if (c > 0) pts.push('チョコ停' + c + '回/週（1回15分）');
+  if (d > 0) pts.push('ドカ停' + d + '回/月（1回4h）');
+  basisLines.push('① 設備停止損失：' + (pts.length ? pts.join('・') : '停止なし') + ' → 年間' + (Math.round(sh * 10) / 10) + 'h停止（実数ベース）');
 
   var defectLoss = 0;
   if (hdef) {
