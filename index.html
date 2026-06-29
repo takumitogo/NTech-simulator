@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTech Predict 期待効果シミュレーター</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F8F8F6;
+    --surface: #FFFFFF;
+    --border: #E4E4DF;
+    --border-strong: #CACAC4;
+    --text: #1A1A18;
+    --text-sub: #5A5A56;
+    --text-muted: #9A9A94;
+    --accent: #1A5C38;
+    --accent-light: #E1F5EE;
+    --accent-mid: #2E7D52;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --blue: #0C447C;
+    --blue-light: #E6F1FB;
+    --radius: 8px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* ヘッダー */
+  .header {
+    margin-bottom: 2.5rem;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent-mid);
+    margin-bottom: .5rem;
+  }
+  .header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: .5rem;
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+
+  /* セクション */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .sec-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sec-label .src-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .sec-label .up-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--accent-light);
+    color: var(--accent);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+  .field input {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px var(--accent-light); }
+  .field input::placeholder { color: var(--text-muted); }
+  .field .hint { font-size: 11px; color: var(--text-muted); }
+
+  /* ラジオ */
+  .radio-group { display: flex; gap: 8px; margin-top: 2px; }
+  .radio-opt {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-sub);
+    transition: all .15s;
+    user-select: none;
+  }
+  .radio-opt input[type=radio] { display: none; }
+  .radio-opt.active {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .radio-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .radio-opt.active .radio-dot {
+    border-color: var(--accent-mid);
+    background: var(--accent-mid);
+  }
+  .radio-opt.active .radio-dot::after {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  /* 仕切り */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* 結果エリア */
+  .result-header {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-bottom: 1rem;
+  }
+  .result-header strong { color: var(--text); }
+
+  .sc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+
+  .sc {
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .sc.mid { border-color: var(--border-strong); }
+
+  .sc-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: .5rem;
+  }
+  .sc.low .sc-tag  { background: var(--accent-light); color: var(--accent); }
+  .sc.mid .sc-tag  { background: var(--blue-light);   color: var(--blue);   }
+  .sc.high .sc-tag { background: var(--amber-light);  color: var(--amber);  }
+
+  .sc-rate { font-size: 12px; color: var(--text-muted); margin-bottom: .5rem; }
+  .sc-val  { font-size: 24px; font-weight: 700; color: var(--text); }
+  .sc-unit { font-size: 12px; color: var(--text-muted); margin-left: 3px; }
+
+  .sc-rows {
+    margin-top: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .sc-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted);
+  }
+  .sc-row span:last-child { color: var(--text); font-weight: 600; }
+
+  /* 根拠テキスト */
+  .basis {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: .75rem;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+
+  /* 注釈 */
+  .note {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    padding-top: .75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .hidden { display: none !important; }
+
+  /* デリバリーコンサルティングロゴ風フッター */
+  .footer {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .sc-grid { grid-template-columns: 1fr; }
+    .radio-group { flex-direction: column; }
+    .header h1 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="header">
+    <div class="header-eyebrow">Delivery Consulting × NTech Predict</div>
+    <h1>期待効果シミュレーター</h1>
+    <p>公開情報とISヒアリング情報を入力するだけで、予知保全導入の期待効果を概算します。</p>
+  </header>
+
+  <!-- 公開情報 -->
+  <div class="card">
+    <div class="sec-label">
+      公開情報
+      <span class="src-tag">HP・IR</span>
+    </div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="field">
+        <label>年間売上高（億円）</label>
+        <input type="number" id="sales" value="200" min="1" step="1">
+      </div>
+      <div class="field">
+        <label>国内工場数</label>
+        <input type="number" id="plants" value="4" min="1" step="1">
+      </div>
+    </div>
+    <div class="field">
+      <label>稼働パターン</label>
+      <div class="radio-group">
+        <label class="radio-opt active" id="opt24">
+          <input type="radio" name="shift" value="24" checked>
+          <span class="radio-dot"></span>
+          24h連続稼働
+        </label>
+        <label class="radio-opt" id="opt8">
+          <input type="radio" name="shift" value="8">
+          <span class="radio-dot"></span>
+          8h稼働（日勤のみ）
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISヒアリング情報 -->
+  <div class="card">
+    <div class="sec-label">
+      ISヒアリング情報
+      <span class="src-tag">架電時取得</span>
+      <span class="up-tag">取得できると精度UP</span>
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label>チョコ停の頻度（回/週）</label>
+        <input type="number" id="choko" value="" min="0" step="0.5" placeholder="空欄→業界平均で補完">
+        <span class="hint">1回あたり約15分と仮定</span>
+      </div>
+      <div class="field">
+        <label>ドカ停の頻度（回/月）</label>
+        <input type="number" id="doka" value="" min="0" step="0.5" placeholder="空欄→業界平均で補完">
+        <span class="hint">1回あたり約4時間と仮定</span>
+      </div>
+      <div class="field">
+        <label>不良率（%）</label>
+        <input type="number" id="defect" value="" min="0" step="0.01" placeholder="空欄→品質ロスは非表示">
+        <span class="hint">入力すると品質不良ロスも算出</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 結果 -->
+  <div class="result-header">
+    NTech Predict 導入による<strong>期待効果（1工場あたり・年間）</strong>　削減シナリオ別
+  </div>
+
+  <div class="sc-grid">
+    <div class="sc low">
+      <span class="sc-tag">保守的シナリオ</span>
+      <div class="sc-rate">削減率 10%</div>
+      <div><span class="sc-val" id="v-low">—</span><span class="sc-unit">万円/年</span></div>
+      <div class="sc-rows">
+        <div class="sc-row"><span>設備停止損失の削減</span><span id="v-low-1">—</span></div>
+        <div class="sc-row hidden" id="row-low-2"><span>品質不良ロスの削減</span><span id="v-low-2">—</span></div>
+      </div>
+    </div>
+    <div class="sc mid">
+      <span class="sc-tag">標準シナリオ</span>
+      <div class="sc-rate">削減率 20%</div>
+      <div><span class="sc-val" id="v-mid">—</span><span class="sc-unit">万円/年</span></div>
+      <div class="sc-rows">
+        <div class="sc-row"><span>設備停止損失の削減</span><span id="v-mid-1">—</span></div>
+        <div class="sc-row hidden" id="row-mid-2"><span>品質不良ロスの削減</span><span id="v-mid-2">—</span></div>
+      </div>
+    </div>
+    <div class="sc high">
+      <span class="sc-tag">積極的シナリオ</span>
+      <div class="sc-rate">削減率 30%</div>
+      <div><span class="sc-val" id="v-high">—</span><span class="sc-unit">万円/年</span></div>
+      <div class="sc-rows">
+        <div class="sc-row"><span>設備停止損失の削減</span><span id="v-high-1">—</span></div>
+        <div class="sc-row hidden" id="row-high-2"><span>品質不良ロスの削減</span><span id="v-high-2">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="basis" class="basis"></div>
+
+  <div class="note">
+    ※設備停止損失の算出：八千代ソリューションズ（2026）の計算方法を参考に「時間あたり売上×年間停止時間」で試算。チョコ停・ドカ停が未入力の場合は業界平均停止損失率で補完。<br>
+    ※品質不良ロスの算出：不良率入力時のみ表示。「1工場売上×不良率」で概算。実際の損失は廃棄・再加工・クレーム対応コストを含むため参考値。<br>
+    ※実際の効果はデータ状況・導入範囲により異なります。御社の実データをもとに精緻化が可能です。
+  </div>
+
+  <div class="footer">
+    株式会社デリバリーコンサルティング　NTech Predict 期待効果シミュレーター
+  </div>
+
+</div>
+
+<script>
+var HOURS = { 24: 8322, 8: 2000 };
+var LOSS_RATE = { 24: 0.020, 8: 0.025 };
+var IDS = ['low', 'mid', 'high'];
+var RATES = [0.10, 0.20, 0.30];
+
+function getShift() {
+  var els = document.querySelectorAll('input[name=shift]');
+  for (var i = 0; i < els.length; i++) if (els[i].checked) return parseInt(els[i].value);
+  return 24;
+}
+
+function calc() {
+  var sales  = parseFloat(document.getElementById('sales').value)  || 0;
+  var plants = parseInt(document.getElementById('plants').value)    || 1;
+  var cr     = document.getElementById('choko').value;
+  var dr     = document.getElementById('doka').value;
+  var defV   = document.getElementById('defect').value;
+  var shift  = getShift();
+  var hours  = HOURS[shift];
+  var pSales = (sales / plants) * 1e8;
+  var hourly = pSales / hours;
+
+  var hc   = cr  !== '' && !isNaN(parseFloat(cr));
+  var hd   = dr  !== '' && !isNaN(parseFloat(dr));
+  var hdef = defV !== '' && !isNaN(parseFloat(defV));
+
+  var stopLoss, basisLines = [];
+
+  if (hc || hd) {
+    var c  = hc ? parseFloat(cr) : 0;
+    var d  = hd ? parseFloat(dr) : 0;
+    var sh = c * 50 * 15 / 60 + d * 12 * 4;
+    stopLoss = hourly * sh / 1e4;
+    var pts = [];
+    if (hc) pts.push('チョコ停' + c + '回/週（1回15分）');
+    if (hd) pts.push('ドカ停' + d + '回/月（1回4h）');
+    basisLines.push('① 設備停止損失：' + pts.join('・') + ' → 年間' + Math.round(sh * 10) / 10 + 'h停止（実数ベース）');
+  } else {
+    var lr = LOSS_RATE[shift];
+    stopLoss = pSales * lr / 1e4;
+    basisLines.push('① 設備停止損失：業界平均停止損失率（' + (lr * 100).toFixed(1) + '%）ベース　※チョコ停・ドカ停を入力すると実数ベースに切替');
+  }
+
+  var defectLoss = 0;
+  if (hdef) {
+    defectLoss = pSales * (parseFloat(defV) / 100) / 1e4;
+    basisLines.push('② 品質不良ロス：不良率' + defV + '% × 1工場売上（概算）');
+  }
+
+  IDS.forEach(function(id, i) {
+    var r   = RATES[i];
+    var v1  = Math.round(stopLoss * r);
+    var v2  = Math.round(defectLoss * r);
+    var tot = v1 + (hdef ? v2 : 0);
+    document.getElementById('v-' + id).textContent    = tot.toLocaleString('ja-JP');
+    document.getElementById('v-' + id + '-1').textContent = v1.toLocaleString('ja-JP') + '万円';
+    document.getElementById('v-' + id + '-2').textContent = v2.toLocaleString('ja-JP') + '万円';
+    document.getElementById('row-' + id + '-2').classList.toggle('hidden', !hdef);
+  });
+
+  document.getElementById('basis').textContent = basisLines.join('\n');
+}
+
+// ラジオボタンのカスタムUI
+document.querySelectorAll('input[name=shift]').forEach(function(el) {
+  el.addEventListener('change', function() {
+    document.getElementById('opt24').classList.toggle('active', this.value === '24');
+    document.getElementById('opt8').classList.toggle('active', this.value === '8');
+    calc();
+  });
+});
+document.getElementById('opt24').addEventListener('click', function() {
+  this.querySelector('input').checked = true;
+  document.getElementById('opt24').classList.add('active');
+  document.getElementById('opt8').classList.remove('active');
+  calc();
+});
+document.getElementById('opt8').addEventListener('click', function() {
+  this.querySelector('input').checked = true;
+  document.getElementById('opt8').classList.add('active');
+  document.getElementById('opt24').classList.remove('active');
+  calc();
+});
+
+document.querySelectorAll('input[type=number]').forEach(function(el) {
+  el.addEventListener('input', calc);
+});
+
+calc();
+</script>
+</body>
+</html>
