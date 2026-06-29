@@ -5,218 +5,241 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NTech Predict 期待効果シミュレーター</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #F8F8F6;
-    --surface: #FFFFFF;
-    --border: #E4E4DF;
-    --border-strong: #CACAC4;
-    --text: #1A1A18;
-    --text-sub: #5A5A56;
-    --text-muted: #9A9A94;
-    --accent: #1A5C38;
-    --accent-light: #E1F5EE;
-    --accent-mid: #2E7D52;
-    --amber: #854F0B;
-    --amber-light: #FAEEDA;
-    --blue: #0C447C;
-    --blue-light: #E6F1FB;
-    --radius: 8px;
-    --radius-lg: 14px;
-  }
+:root {
+  --bg: #F8F8F6;
+  --surface: #FFFFFF;
+  --border: #E4E4DF;
+  --border-strong: #CACAC4;
+  --text: #1A1A18;
+  --text-sub: #5A5A56;
+  --text-muted: #9A9A94;
+  --accent: #1A5C38;
+  --accent-light: #E1F5EE;
+  --accent-mid: #2E7D52;
+  --amber: #854F0B;
+  --amber-light: #FAEEDA;
+  --blue: #0C447C;
+  --blue-light: #E6F1FB;
+  --radius: 8px;
+  --radius-lg: 14px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-    padding: 2rem 1rem 4rem;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
 
-  .container {
-    max-width: 780px;
-    margin: 0 auto;
-  }
+.container { max-width: 780px; margin: 0 auto; }
 
-  /* ヘッダー */
-  .header {
-    margin-bottom: 2.5rem;
-  }
+.header { margin-bottom: 2rem; }
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  color: var(--text);
+  margin-bottom: .4rem;
+}
+.header p { font-size: 13px; color: var(--text-sub); }
 
-  .header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    line-height: 1.25;
-    color: var(--text);
-    margin-bottom: .5rem;
-  }
-  .header p {
-    font-size: 13px;
-    color: var(--text-sub);
-  }
+/* 企業名バナー */
+.company-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.company-banner label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  letter-spacing: .04em;
+}
+.company-banner input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  background: transparent;
+}
+.company-banner input::placeholder { color: var(--border-strong); font-weight: 400; }
 
-  /* セクション */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
 
-  .sec-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .sec-label .src-tag {
-    font-size: 10px;
-    font-weight: 500;
-    padding: 1px 7px;
-    border-radius: 4px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    letter-spacing: 0;
-    text-transform: none;
-  }
-  .sec-label .up-tag {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 1px 7px;
-    border-radius: 4px;
-    background: var(--accent-light);
-    color: var(--accent);
-    letter-spacing: 0;
-    text-transform: none;
-  }
+.sec-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.src-tag {
+  font-size: 10px; font-weight: 500; padding: 1px 7px;
+  border-radius: 4px; background: var(--bg); border: 1px solid var(--border);
+  color: var(--text-muted); letter-spacing: 0; text-transform: none;
+}
+.up-tag {
+  font-size: 10px; font-weight: 600; padding: 1px 7px;
+  border-radius: 4px; background: var(--accent-light);
+  color: var(--accent); letter-spacing: 0; text-transform: none;
+}
 
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 12px; font-weight: 500; color: var(--text-sub); }
-  .field input {
-    height: 40px;
-    padding: 0 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--bg);
-    outline: none;
-    transition: border-color .15s;
-  }
-  .field input:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px var(--accent-light); }
-  .field input::placeholder { color: var(--text-muted); }
-  .field .hint { font-size: 11px; color: var(--text-muted); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 500; color: var(--text-sub); }
+.field input, .field select, .field textarea {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .15s;
+  font-family: inherit;
+}
+.field input, .field select { height: 40px; padding: 0 12px; }
+.field select { cursor: pointer; }
+.field textarea { padding: 10px 12px; resize: vertical; min-height: 90px; line-height: 1.5; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--accent-mid);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--text-muted); }
+.field .hint { font-size: 11px; color: var(--text-muted); }
 
+/* 求人テキスト解析 */
+.analyze-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 8px; }
+.analyze-row textarea { flex: 1; }
+.analyze-btn {
+  white-space: nowrap;
+  padding: 0 16px;
+  height: 40px;
+  border: 1px solid var(--accent-mid);
+  border-radius: var(--radius);
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+.analyze-btn:hover { background: var(--accent-mid); color: #fff; }
+.analyze-result {
+  font-size: 12px;
+  color: var(--accent);
+  margin-top: 6px;
+  min-height: 18px;
+  font-weight: 500;
+}
 
-  /* フッター不要 */
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 
-  /* 仕切り */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.result-header { font-size: 13px; color: var(--text-sub); margin-bottom: 1rem; }
+.result-header strong { color: var(--text); }
 
-  /* 結果エリア */
-  .result-header {
-    font-size: 13px;
-    color: var(--text-sub);
-    margin-bottom: 1rem;
-  }
-  .result-header strong { color: var(--text); }
+.sc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
 
-  .sc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+.sc { border-radius: var(--radius-lg); padding: 1.25rem; border: 1px solid var(--border); background: var(--surface); }
+.sc.mid { border-color: var(--border-strong); }
 
-  .sc {
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    border: 1px solid var(--border);
-    background: var(--surface);
-  }
-  .sc.mid { border-color: var(--border-strong); }
+.sc-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: .5rem; }
+.sc.low .sc-tag  { background: var(--accent-light); color: var(--accent); }
+.sc.mid .sc-tag  { background: var(--blue-light);   color: var(--blue);   }
+.sc.high .sc-tag { background: var(--amber-light);  color: var(--amber);  }
 
-  .sc-tag {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: .5rem;
-  }
-  .sc.low .sc-tag  { background: var(--accent-light); color: var(--accent); }
-  .sc.mid .sc-tag  { background: var(--blue-light);   color: var(--blue);   }
-  .sc.high .sc-tag { background: var(--amber-light);  color: var(--amber);  }
+.sc-rate { font-size: 12px; color: var(--text-muted); margin-bottom: .5rem; }
+.sc-val  { font-size: 24px; font-weight: 700; color: var(--text); }
+.sc-unit { font-size: 12px; color: var(--text-muted); margin-left: 3px; }
 
-  .sc-rate { font-size: 12px; color: var(--text-muted); margin-bottom: .5rem; }
-  .sc-val  { font-size: 24px; font-weight: 700; color: var(--text); }
-  .sc-unit { font-size: 12px; color: var(--text-muted); margin-left: 3px; }
+.sc-rows { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+.sc-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+.sc-row span:last-child { color: var(--text); font-weight: 600; }
 
-  .sc-rows {
-    margin-top: .75rem;
-    padding-top: .75rem;
-    border-top: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 5px;
-  }
-  .sc-row {
-    display: flex; justify-content: space-between;
-    font-size: 11px; color: var(--text-muted);
-  }
-  .sc-row span:last-child { color: var(--text); font-weight: 600; }
+.basis { font-size: 11px; color: var(--text-muted); margin-bottom: .75rem; line-height: 1.7; white-space: pre-line; }
 
-  /* 根拠テキスト */
-  .basis {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: .75rem;
-    line-height: 1.7;
-    white-space: pre-line;
-  }
+.note { font-size: 11px; color: var(--text-muted); line-height: 1.7; padding-top: .75rem; border-top: 1px solid var(--border); }
 
-  /* 注釈 */
-  .note {
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.7;
-    padding-top: .75rem;
-    border-top: 1px solid var(--border);
-  }
+/* PDFボタン */
+.pdf-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.pdf-btn:hover { background: var(--accent-mid); }
 
-  .hidden { display: none !important; }
+.hidden { display: none !important; }
 
+@media (max-width: 600px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .sc-grid { grid-template-columns: 1fr; }
+  .analyze-row { flex-direction: column; }
+  .analyze-btn { width: 100%; }
+}
 
-
-  @media (max-width: 600px) {
-    .grid2, .grid3 { grid-template-columns: 1fr; }
-    .sc-grid { grid-template-columns: 1fr; }
-
-    .header h1 { font-size: 1.4rem; }
-  }
+@media print {
+  body { background: #fff; padding: 0; }
+  .pdf-btn, .analyze-btn, .analyze-row { display: none !important; }
+  .card, .company-banner { border: 1px solid #ccc; box-shadow: none; }
+  .sc-grid { grid-template-columns: repeat(3, 1fr) !important; }
+}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="container" id="main">
 
   <header class="header">
     <h1>期待効果シミュレーター</h1>
     <p>公開情報とISヒアリング情報を入力するだけで、予知保全導入の期待効果を概算します。</p>
   </header>
 
+  <!-- 企業名 -->
+  <div class="company-banner">
+    <label>企業名</label>
+    <input type="text" id="company" placeholder="○○株式会社">
+  </div>
+
   <!-- 公開情報 -->
   <div class="card">
-    <div class="sec-label">
-      公開情報
-      <span class="src-tag">HP・IR</span>
-    </div>
+    <div class="sec-label">公開情報 <span class="src-tag">HP・IR</span></div>
     <div class="grid2" style="margin-bottom:14px">
       <div class="field">
         <label>年間売上高（億円）</label>
@@ -227,20 +250,41 @@
         <input type="number" id="plants" value="4" min="1" step="1">
       </div>
     </div>
-    <div class="field">
-      <label>年間稼働時間（時間）</label>
-      <input type="number" id="ophours" value="8322" min="1" max="8760" step="1">
-      <span class="hint">24h連続稼働の目安：8,322h　／　8h日勤の目安：2,000h</span>
+
+    <!-- 稼働時間 -->
+    <div class="grid2">
+      <div class="field">
+        <label>稼働パターン</label>
+        <select id="shift-preset">
+          <option value="2000">日中のみ（8h × 250日 ＝ 2,000h）</option>
+          <option value="4000">2交替（16h × 250日 ＝ 4,000h）</option>
+          <option value="8322" selected>3交替・24h連続（8,322h）</option>
+          <option value="custom">その他（手入力）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>年間稼働時間（時間）</label>
+        <input type="number" id="ophours" value="8322" min="1" max="8760" step="1">
+        <span class="hint">プリセット選択で自動入力。手入力も可。</span>
+      </div>
+    </div>
+
+    <!-- 求人テキスト解析 -->
+    <div style="margin-top:14px">
+      <div class="field">
+        <label>求人ページのテキストを貼り付けて稼働時間を自動推測</label>
+        <div class="analyze-row">
+          <textarea id="job-text" placeholder="求人ページの勤務時間・シフトに関する文章をここにコピペしてください&#10;例）「勤務時間：8:00〜17:00（日勤のみ）」「交替制勤務（3交替）」など"></textarea>
+          <button class="analyze-btn" onclick="analyzeJobText()">推測する</button>
+        </div>
+        <div class="analyze-result" id="analyze-result"></div>
+      </div>
     </div>
   </div>
 
   <!-- ISヒアリング情報 -->
   <div class="card">
-    <div class="sec-label">
-      ISヒアリング情報
-      <span class="src-tag">架電時取得</span>
-      <span class="up-tag">取得できると精度UP</span>
-    </div>
+    <div class="sec-label">ISヒアリング情報 <span class="src-tag">架電時取得</span> <span class="up-tag">取得できると精度UP</span></div>
     <div class="grid3">
       <div class="field">
         <label>チョコ停の頻度（回/週）</label>
@@ -262,7 +306,6 @@
 
   <hr class="divider">
 
-  <!-- 結果 -->
   <div class="result-header">
     NTech Predict 導入による<strong>期待効果（1工場あたり・年間）</strong>　削減シナリオ別
   </div>
@@ -305,24 +348,86 @@
     ※実際の効果はデータ状況・導入範囲により異なります。御社の実データをもとに精緻化が可能です。
   </div>
 
+  <button class="pdf-btn" onclick="savePDF()">PDFで保存</button>
 
+</div>
 
 <script>
-var IDS = ['low', 'mid', 'high'];
+var IDS   = ['low', 'mid', 'high'];
 var RATES = [0.10, 0.20, 0.30];
 
-function calc() {
-  var sales   = parseFloat(document.getElementById('sales').value)   || 0;
-  var plants  = parseInt(document.getElementById('plants').value)     || 1;
-  var hours   = parseFloat(document.getElementById('ophours').value) || 8322;
-  var cr      = document.getElementById('choko').value;
-  var dr      = document.getElementById('doka').value;
-  var defV    = document.getElementById('defect').value;
-  var pSales  = (sales / plants) * 1e8;
-  var hourly  = pSales / hours;
+/* プリセット選択 → 稼働時間自動入力 */
+document.getElementById('shift-preset').addEventListener('change', function() {
+  var v = this.value;
+  if (v !== 'custom') {
+    document.getElementById('ophours').value = v;
+    calc();
+  }
+});
 
-  var hc   = cr  !== '' && !isNaN(parseFloat(cr));
-  var hd   = dr  !== '' && !isNaN(parseFloat(dr));
+/* 稼働時間を手入力したらプリセットを「その他」に */
+document.getElementById('ophours').addEventListener('input', function() {
+  var presets = ['2000','4000','8322'];
+  var v = this.value;
+  if (presets.indexOf(v) === -1) {
+    document.getElementById('shift-preset').value = 'custom';
+  } else {
+    document.getElementById('shift-preset').value = v;
+  }
+  calc();
+});
+
+/* 求人テキスト解析（キーワードベース・AIなし） */
+function analyzeJobText() {
+  var text = document.getElementById('job-text').value;
+  var result = document.getElementById('analyze-result');
+  if (!text.trim()) { result.textContent = 'テキストを貼り付けてください。'; return; }
+
+  var t = text.replace(/\s/g, '');
+  var hours = null;
+  var label = '';
+
+  /* 具体的な時間表記を抽出 */
+  var timeMatch = text.match(/(\d{1,2})[：:時](\d{0,2})[^〜～\-〜]*[〜～\-〜]+(\d{1,2})[：:時](\d{0,2})/g);
+
+  /* 3交替・24h */
+  if (/3交替|三交替|三交代|3交代|24時間|24h|24Ｈ|連続稼働|昼夜/.test(text)) {
+    hours = 8322; label = '3交替・24h連続稼働（8,322h）と推測しました';
+  }
+  /* 2交替 */
+  else if (/2交替|二交替|二交代|2交代|2シフト|二シフト|16時間|夜勤あり/.test(text)) {
+    hours = 4000; label = '2交替稼働（4,000h）と推測しました';
+  }
+  /* 日勤のみ */
+  else if (/日勤のみ|日中のみ|昼間のみ|日勤専属|8時間|8h|9時.*17時|8時.*17時|8時.*16時|9時.*18時/.test(text)) {
+    hours = 2000; label = '日中のみ稼働（2,000h）と推測しました';
+  }
+  else {
+    result.style.color = 'var(--text-muted)';
+    result.textContent = 'キーワードから自動判定できませんでした。手動で入力してください。';
+    return;
+  }
+
+  document.getElementById('ophours').value = hours;
+  document.getElementById('shift-preset').value = String(hours);
+  result.style.color = 'var(--accent)';
+  result.textContent = '✓ ' + label;
+  calc();
+}
+
+/* メイン計算 */
+function calc() {
+  var sales  = parseFloat(document.getElementById('sales').value)   || 0;
+  var plants = parseInt(document.getElementById('plants').value)     || 1;
+  var hours  = parseFloat(document.getElementById('ophours').value) || 8322;
+  var cr     = document.getElementById('choko').value;
+  var dr     = document.getElementById('doka').value;
+  var defV   = document.getElementById('defect').value;
+  var pSales = (sales / plants) * 1e8;
+  var hourly = pSales / hours;
+
+  var hc   = cr   !== '' && !isNaN(parseFloat(cr));
+  var hd   = dr   !== '' && !isNaN(parseFloat(dr));
   var hdef = defV !== '' && !isNaN(parseFloat(defV));
 
   var stopLoss, basisLines = [];
@@ -335,11 +440,11 @@ function calc() {
     var pts = [];
     if (hc) pts.push('チョコ停' + c + '回/週（1回15分）');
     if (hd) pts.push('ドカ停' + d + '回/月（1回4h）');
-    basisLines.push('① 設備停止損失：' + pts.join('・') + ' → 年間' + Math.round(sh * 10) / 10 + 'h停止（実数ベース）');
+    basisLines.push('① 設備停止損失：' + pts.join('・') + ' → 年間' + (Math.round(sh * 10) / 10) + 'h停止（実数ベース）');
   } else {
-    var lossRate = hours >= 6000 ? 0.020 : 0.025;
-    stopLoss = pSales * lossRate / 1e4;
-    basisLines.push('① 設備停止損失：業界平均停止損失率（' + (lossRate * 100).toFixed(1) + '%）ベース　※チョコ停・ドカ停を入力すると実数ベースに切替');
+    var lr = hours >= 6000 ? 0.020 : 0.025;
+    stopLoss = pSales * lr / 1e4;
+    basisLines.push('① 設備停止損失：業界平均停止損失率（' + (lr * 100).toFixed(1) + '%）ベース　※チョコ停・ドカ停を入力すると実数ベースに切替');
   }
 
   var defectLoss = 0;
@@ -362,8 +467,17 @@ function calc() {
   document.getElementById('basis').textContent = basisLines.join('\n');
 }
 
-document.querySelectorAll('input[type=number]').forEach(function(el) {
-  el.addEventListener('input', calc);
+/* PDF保存 */
+function savePDF() {
+  var company = document.getElementById('company').value.trim() || '期待効果シミュレーター';
+  document.title = company + '_NTech期待効果';
+  window.print();
+  setTimeout(function() { document.title = 'NTech Predict 期待効果シミュレーター'; }, 1000);
+}
+
+/* 数値入力の変化検知 */
+['sales','plants','choko','doka','defect'].forEach(function(id) {
+  document.getElementById(id).addEventListener('input', calc);
 });
 
 calc();
