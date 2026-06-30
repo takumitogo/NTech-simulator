@@ -258,14 +258,14 @@ body {
         <select id="shift-preset">
           <option value="2000">日中のみ（8h × 250日 ＝ 2,000h）</option>
           <option value="4000">2交替（16h × 250日 ＝ 4,000h）</option>
-          <option value="8322" selected>3交替・24h連続（8,322h）</option>
+          <option value="8000" selected>3交替・24h連続（8,000h）</option>
           <option value="custom">その他（手入力）</option>
         </select>
       </div>
       <div class="field">
         <label>年間稼働時間（時間）</label>
-        <input type="number" id="ophours" value="8322" min="1" max="8760" step="1">
-        <span class="hint">プリセット選択で自動入力。手入力も可。</span>
+        <input type="number" id="ophours" value="8000" min="1" max="8760" step="1">
+        <span class="hint">日中のみ：2,000h　／　2交替：4,000h　／　3交替・24h：8,000h</span>
       </div>
     </div>
 
@@ -368,7 +368,7 @@ document.getElementById('shift-preset').addEventListener('change', function() {
 
 /* 稼働時間を手入力したらプリセットを「その他」に */
 document.getElementById('ophours').addEventListener('input', function() {
-  var presets = ['2000','4000','8322'];
+  var presets = ['2000','4000','8000'];
   var v = this.value;
   if (presets.indexOf(v) === -1) {
     document.getElementById('shift-preset').value = 'custom';
@@ -393,7 +393,7 @@ function analyzeJobText() {
 
   /* 3交替・24h */
   if (/3交替|三交替|三交代|3交代|24時間|24h|24Ｈ|連続稼働|昼夜/.test(text)) {
-    hours = 8322; label = '3交替・24h連続稼働（8,322h）と推測しました';
+    hours = 8000; label = "3交替・24h連続稼働（8,000h）と推測しました";
   }
   /* 2交替 */
   else if (/2交替|二交替|二交代|2交代|2シフト|二シフト|16時間|夜勤あり/.test(text)) {
@@ -420,7 +420,7 @@ function analyzeJobText() {
 function calc() {
   var sales  = parseFloat(document.getElementById('sales').value)   || 0;
   var plants = parseInt(document.getElementById('plants').value)     || 1;
-  var hours  = parseFloat(document.getElementById('ophours').value) || 8322;
+  var hours  = parseFloat(document.getElementById("ophours").value) || 8000;
   var cr     = document.getElementById('choko').value;
   var dr     = document.getElementById('doka').value;
   var defV   = document.getElementById('defect').value;
@@ -440,12 +440,16 @@ function calc() {
   var pts = [];
   if (c > 0) pts.push('チョコ停' + c + '回/週（1回15分）');
   if (d > 0) pts.push('ドカ停' + d + '回/月（1回4h）');
+  var hourlyMan = Math.round(hourly / 1e4);
+  var stopLossMan = Math.round(stopLoss);
   basisLines.push('① 設備停止損失：' + (pts.length ? pts.join('・') : '停止なし') + ' → 年間' + (Math.round(sh * 10) / 10) + 'h停止（実数ベース）');
+  basisLines.push('② 時間あたり売上：年間売上高（' + sales + '億）÷ 工場数（' + plants + '）÷ 稼働時間（' + hours + 'h）＝ 約' + hourlyMan + '万円/h');
+  basisLines.push('③ 年間停止損失：時間あたり売上（' + hourlyMan + '万円）× 年間停止時間（' + (Math.round(sh * 10) / 10) + 'h）＝ 約' + stopLossMan.toLocaleString('ja-JP') + '万円');
 
   var defectLoss = 0;
   if (hdef) {
     defectLoss = pSales * (parseFloat(defV) / 100) / 1e4;
-    basisLines.push('② 品質不良ロス：不良率' + defV + '% × 1工場売上（概算）');
+    basisLines.push('④ 品質不良ロス：不良率' + defV + '% × 1工場売上（概算）');
   }
 
   IDS.forEach(function(id, i) {
